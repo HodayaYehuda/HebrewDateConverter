@@ -6,6 +6,27 @@
   <title>המרת תאריך לועזי לתאריך עברי</title>
 </head>
 
+
+<body>
+  <h1>המרת תאריך לועזי לתאריך עברי</h1>
+
+  <label>תאריך לועזי</label>
+  <input type="text" id="gregorian-date" placeholder="yyyy-mm-dd">
+  <button onclick="handleConvertButtonClick()">המרה</button>
+  <br>
+
+  <label for="hebrew-date">תאריך עברי</label>
+  <span id="hebrew-date"></span>
+  <br><br><br>
+
+  <label for="holidays">חגים ומועדים</label>
+  <span id="holidays"></span>
+
+  <span id="error"></span>
+  <div id="error-message" class="error-message">תאריך לא תקין. אנא הזן תאריך בפורמט תקין (yyyy-mm-dd).</div>
+</body>
+
+
 <style>
   body {
     font-family: Arial, sans-serif;
@@ -66,27 +87,6 @@
     color: red;
   }
 </style>
-
-<body>
-  <h1>המרת תאריך לועזי לתאריך עברי</h1>
-
-  <label>תאריך לועזי</label>
-  <input type="text" id="gregorian-date" placeholder="yyyy-mm-dd">
-  <button onclick="handleConvertButtonClick()">המרה</button>
-  <br>
-
-  <label for="hebrew-date">תאריך עברי</label>
-  <span id="hebrew-date"></span>
-  <br><br><br>
-
-  <label for="holidays">חגים ומועדים</label>
-  <span id="holidays"></span>
-
-  <span id="error"></span>
-
-  <div id="error-message" class="error-message">תאריך לא תקין. אנא הזן תאריך בפורמט תקין (yyyy-mm-dd).</div>
-
-</body>
 
 <script>   
   function convertDate(gregorianDate) {
@@ -154,7 +154,7 @@
 
       holiday(gregorianDate)
       .then((events) => {
-        document.getElementById('holidays').textContent = events;
+       document.getElementById('holidays').textContent = events;
       })
       .catch((error) => {
         console.error('אירעה שגיאה:', error);
@@ -164,7 +164,7 @@
 
       const errorMessage = document.getElementById('error-message');
       errorMessage.style.display = 'block';
-      hebrewDateField.textContent = ''; // מחיקת תוכן של שדה התאריך העברי
+      hebrewDateField.textContent = ''; 
       holidaysField.textContent = '';
 
     }  
@@ -175,10 +175,10 @@
   const day = parseInt(parts[2], 10);
   const month = parseInt(parts[1], 10);
 
-  // בדיקה האם התאריך תקין
   const isValid = !isNaN(day) && !isNaN(month) &&
                    day >= 1 && day <= 31 && 
-                   month >= 1 && month <= 12;
+                   month >= 1 && month <= 12
+                   && dateString.length == 10; // 2002-01-01
                   
 
   return isValid;
