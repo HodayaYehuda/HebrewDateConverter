@@ -1,0 +1,188 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>המרת תאריך לועזי לתאריך עברי</title>
+</head>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+  }
+
+  h1 {
+    text-align: right;
+      text-align: center;
+      color: #333333;
+    }
+
+    label {
+      text-align: right;
+      display: block;
+      margin-bottom: 10px;
+      font-weight: bold;
+      color: #555555;
+    }
+
+    input[type="text"] {
+      text-align: right;
+      margin-left: 600px;
+      width: 50%;
+      padding: 10px;
+      border: 1px solid #cccccc;
+      border-radius: 3px;
+      font-size: 16px;
+    }
+
+    button {
+      text-align: right;
+      margin-left: 600px;
+      display: block;
+      width: 51.5%;
+      padding: 10px;
+      background-color: #4c7aaf;
+      color: #ffffff;
+      border: none;
+      border-radius: 3px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .result {
+      text-align: left;
+      margin-left: 600px;
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #eeeeee;
+      border: 1px solid #cccccc;
+      border-radius: 3px;
+      font-size: 18px;
+    }
+
+    .error-message {
+    display: none;
+    color: red;
+  }
+</style>
+
+<body>
+  <h1>המרת תאריך לועזי לתאריך עברי</h1>
+
+  <label>תאריך לועזי</label>
+  <input type="text" id="gregorian-date" placeholder="yyyy-mm-dd">
+  <button onclick="handleConvertButtonClick()">המרה</button>
+  <br>
+
+  <label for="hebrew-date">תאריך עברי</label>
+  <span id="hebrew-date"></span>
+  <br><br><br>
+
+  <label for="holidays">חגים ומועדים</label>
+  <span id="holidays"></span>
+
+  <span id="error"></span>
+
+  <div id="error-message" class="error-message">תאריך לא תקין. אנא הזן תאריך בפורמט תקין (yyyy-mm-dd).</div>
+
+</body>
+
+<script>   
+  function convertDate(gregorianDate) {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      const url = `https://www.hebcal.com/converter?cfg=json&date=${gregorianDate}&g2h=1&strict=1`;
+
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            const response = JSON.parse(xhr.responseText);
+            const hebrewDate = response.hebrew;
+            
+            resolve(hebrewDate);
+          } else {
+            reject(xhr.status);
+          }
+        }
+      };
+
+      xhr.open('GET', url, true);
+      xhr.send();
+    });
+  }
+
+  function holiday(gregorianDate) {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      const url = `https://www.hebcal.com/converter?cfg=json&date=${gregorianDate}&g2h=1&strict=1`;
+
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            const response = JSON.parse(xhr.responseText);
+            const events = response.events;
+            
+            resolve(events);
+          } else {
+            reject(xhr.status);
+          }
+        }
+      };
+
+      xhr.open('GET', url, true);
+      xhr.send();
+    });
+  }
+
+
+  function handleConvertButtonClick() {
+    const gregorianDate = document.getElementById('gregorian-date').value;
+    const errorMessage = document.getElementById('error-message');
+    const hebrewDateField = document.getElementById('hebrew-date');
+    const holidaysField = document.getElementById('holidays');
+
+    if (isValidDate(document.getElementById('gregorian-date').value)) {
+    convertDate(gregorianDate)
+      .then((hebrewDate) => {
+        document.getElementById('hebrew-date').textContent = hebrewDate;
+        errorMessage.style.display = 'none';
+      })
+      .catch((error) => {
+        console.error('אירעה שגיאה:', error);
+      });
+
+      holiday(gregorianDate)
+      .then((events) => {
+        document.getElementById('holidays').textContent = events;
+      })
+      .catch((error) => {
+        console.error('אירעה שגיאה:', error);
+      });
+    }
+    else{
+
+      const errorMessage = document.getElementById('error-message');
+      errorMessage.style.display = 'block';
+      hebrewDateField.textContent = ''; // מחיקת תוכן של שדה התאריך העברי
+      holidaysField.textContent = '';
+
+    }  
+  }
+
+  function isValidDate(dateString) {
+  const parts = dateString.split('-');
+  const day = parseInt(parts[2], 10);
+  const month = parseInt(parts[1], 10);
+
+  // בדיקה האם התאריך תקין
+  const isValid = !isNaN(day) && !isNaN(month) &&
+                   day >= 1 && day <= 31 && 
+                   month >= 1 && month <= 12;
+                  
+
+  return isValid;
+}
+
+</script>
+</html>
